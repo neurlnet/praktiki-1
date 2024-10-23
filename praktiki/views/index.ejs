@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RANDOM APP</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            color:white;
+        }
+        .links{
+            width: 17.5%;
+            background-color: rgb(41, 39, 39);
+            float: left;
+            border-radius: 10px;
+            height: 100vh;
+            padding: 1.25%;
+        }
+
+        #chat_window {
+            width: 79.4%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="links">
+    <h1>Hello <%= name%>
+    </h1>
+    <h2>Your chats include:</h2>
+    <ul>
+        <%if(sessions!=="none"){%>
+            <%for(let i=0; i<sessions.length; i++){%>
+                <li><a href="/chat?session=<%=sessions[i]%>" target="chat_window"><%=sessions[i]%></a></li>
+            <%}%>
+        <%}%>
+        <hr>
+        <li><a href="/chat?session=new">New chat</a></li>
+        <li><a href="/logout">Logout</a></li>
+    </ul>
+    </div>
+    <iframe id="chat_window" name="chat_window" src="/chat?session=<%=sessions[0]%>" style="float: right"></iframe>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</body>
+
+</html>

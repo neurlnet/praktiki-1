@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHAT</title>
+    <style>
+        * {
+            font-size: 20px;
+            scroll-behavior: smooth;
+        }
+
+        #chats {
+
+            height: 100%;
+            width: 1280px;
+            /* background-color:#CCC; */
+            overflow-y: auto;
+            float: left;
+            position: relative;
+            margin-left: -5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="chats">
+        <%for(let i=0; i<(chats.length); i++){%>
+            <%if(chats[i].ai){%>
+                <p>Me: <%=chats[i].ai%>
+                </p>
+                <%}else{%>
+                    <p>You: <%=chats[i].human%>
+                    </p>
+                    <%}%>
+                        <%}%>
+    </div>
+    <input type="text" name="query" id="query" />
+    <button onclick="getreponse()" type="submit">SUBMIT</button>
+    <br>
+    <br>
+    <textarea name="text" id="textarea"></textarea>
+    <br>
+    <button onclick="savedoc()">SUBMIT</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        const input = document.getElementById("query");
+        const value = input.value
+        function getreponse() {
+            const data = { "user_id": "<%=username%>", "session_id": "<%=session%>", "query": $("#query").val(), type: "input" }
+            $.getJSON("/request", $.param(data), (res) => {
+                console.log("RESPONSE: " + res.text)
+                $("#chats").append($(`<p>You: ${$("#query").val()}</p>`))
+                $("#chats").append(`<p>Me: ${res.text}</p>`)
+            })
+            console.log($("#query").val())
+        }
+        
+        const textarea = $("#textarea").val()
+        function savedoc() {
+            const data = { "user_id": "<%=username%>", "session_id": "<%=session%>","type": "text-area", "query": textarea }
+            $.getJSON("/request", $.param(data), (res) => {
+                console.log("RESPONSE: " + res.text)
+                $("#chats").append($(`<b>NEW DOCUMENT UPLOADED</b>`))
+            })
+            console.log($("#query").val())
+        }
+    </script>
+</body>
+
+</html>
