@@ -62,7 +62,7 @@ app.get('/logout', (req, res) => {
 app.post('/submit', async (req, res) => {
     const text = req.query.doc_text;
     const name = req.query.doc_name;
-
+    console.log(text)
     fetch("https://praktikiapi-tu58usbg.b4a.run/save",
         {
             headers: {
@@ -117,6 +117,7 @@ app.get('/request', (req, res) => {
             return res.send({ text: response.response });
         })
     } else {
+        console.log(req.query)
         ajax({
             method: 'POST',
             url: 'https://praktikiapi-tu58usbg.b4a.run/save',

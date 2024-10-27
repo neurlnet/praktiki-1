@@ -26,14 +26,13 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script>
-        const textarea = $("#textarea").val()
         function savedoc() {
+            const textarea = $("#textarea").val()
             const data = { "user_id": "<%=username%>", "session_id": $("#query").val(), "type": "text-area", "query": textarea }
             $.getJSON("/request", $.param(data), (res) => {
                 console.log("RESPONSE: " + res.text)
                 $("#chats").append($(`<b>NEW DOCUMENT UPLOADED</b>`))
             })
-
             return window.location.replace(`http://localhost/chat?session=${encodeURIComponent($("#query").val())}`)
         }
     </script>
