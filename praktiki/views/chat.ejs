@@ -13,63 +13,144 @@
         * {
             font-size: 20px;
             scroll-behavior: smooth;
+            padding: 0px;
+            border-radius: 8px;
         }
 
         #chats {
             height: 100%;
-            width: 1280px;
-            /* background-color:#CCC; */
-            overflow-y: auto;
-            float: left;
-            position: relative;
-            
+            width: 100%;
+            background: #e4e2e2;
+            width: 100%;
+            padding-top: 15px;
+            padding-bottom:15px;
         }
+
+        p {
+            padding: 0px;
+            margin: 0px;
+            padding-bottom: 15px;
+        }
+
+        ul,
+        ol {
+            margin-left: 0.75em;
+            text-align: left;
+        }
+
         div#human {
-            padding:10px;
-            background-color:rgb(192, 255, 234);
-            width:max-content;
+            padding: 10px;
+            background-color: rgb(192, 255, 234);
+            width: max-content;
             max-width: 60%;
-            right:1px;
             justify-content: right;
-            border-radius:4px;
-            margin:5px;
-            margin-right:0px;
-            position: absolute;
+            border-radius: 10px;
+            margin: 5px;
+            position: relative;
             right: 0px;
+            margin-right: 16px;
+            float: right;
+            /* color: #fff; */
+            background: linear-gradient(120deg, #3de488, #3dbfe3);
+            border-radius: 17px 17px 0 17px;
         }
+
         div#ai {
-            padding:10px;
-            margin:5px;
-            background-color:rgb(215, 215, 215);
-            width:max-content;
-            max-width:60%;
-            right:1px;
+            padding: 10px;
+            margin: 9px;
+            background-color: rgb(215, 215, 215);
+            width: max-content;
+            max-width: 60%;
+            right: 1px;
             justify-content: right;
-            border-radius:4px;
+            border-radius: 10px;
+            background: linear-gradient(30deg, #a4ddbd, #9bcbd9);
+            border-radius: 17px 17px 17px 0;
+            margin-bottom:1px;
         }
+
         div#chatuser {
-            font-size:15px;
-            font-weight:bold;
-            color:rgba(2, 49, 47, 0.65)
+            font-size: 15px;
+            font-weight: bold;
+            color: rgba(2, 49, 47, 0.65)
         }
-        div#container{
-            margin-bottom:140px;
+
+        div#container {
+            overflow-y: auto;
+            position: relative;
+            overflow: auto;
+            display: inline-block;
+            width: 100%;
+            padding-right: 5px;
         }
-        div#newdocument{
-            margin:auto;
-            width:max-content;
-            background-color:rgb(193, 193, 193);
-            border-radius:6px;
+
+        div#newdocument {
+            margin: auto;
+            width: max-content;
+            background-color: rgb(193, 193, 193);
+            border-radius: 6px;
         }
-        body{
-            margin-bottom:10%
+
+        body {
+            margin-bottom: 10%
         }
+
+        code {
+            font-size: 75%;
+        }
+
+        pre {
+            border-radius: 5px;
+            background-color: rgb(143, 148, 152);
+        }
+
+        div.inputs {
+            position: sticky;
+            bottom: 0;
+            background: linear-gradient(10deg, #86a9afb0, #3e5c50bd);
+            width: 100%;
+            margin: 0%;
+            border-radius: 1px 1px 8px 8px;
+            height:max-content;
+        }
+
+        #query {
+            background: none;
+            border: none;
+            outline: none !important;
+            resize: none;
+            color: rgba(255, 255, 255, .7);
+            padding: 10px;
+            height:65px;
+            margin: 0;
+            padding-right: 20px;
+        }
+
+        & .message-submit {
+            position: absolute;
+            z-index: 1;
+            margin:9px;
+
+            right: 10px;
+            color: #fff;
+            border: none;
+            background: #248A52;
+            text-transform: uppercase;
+            line-height: 1;
+            padding: 6px 10px;
+            border-radius: 10px;
+            outline: none !important;
+        }
+        .message-submit:hover{
+            background: #1D7745;
+        }   
     </style>
 </head>
 
-<body>
-    <div id="chats">
-        <!-- <%for(let i=0; i<(chats.length); i++){%>
+<body style="margin:8px;">
+    <div id="wrapper">
+        <div id="chats">
+            <!-- <%for(let i=0; i<(chats.length); i++){%>
             <%if(chats[i].ai){%>
                 <div ><div id="ai"><div id="chatuser">Praktiki</div><br><%=chats[i].ai%>
                 </div></div>
@@ -78,81 +159,86 @@
                     </div></div>
                     <%}%>
                         <%}%> -->
-    </div>
-    <div id="chat_data_server" style="display: none;">
-        <%-chats%>
-    </div>
-    <script>
-        let chats = JSON.parse($("#chat_data_server").text())
-        var converter = new showdown.Converter()
-        for(let i=0; i<(chats.length); i++){
-            if(chats[i].ai){
-                let formatted = converter.makeHtml(chats[i].ai)
-                $("#chats").append(`<div>
+        </div>
+        <div id="chat_data_server" style="display: none;">
+            <%-chats%>
+        </div>
+        <script>
+            let chats = JSON.parse($("#chat_data_server").text())
+            var converter = new showdown.Converter()
+            for (let i = 0; i < (chats.length); i++) {
+                if (chats[i].ai) {
+                    let formatted = converter.makeHtml(chats[i].ai)
+                    $("#chats").append(`<div>
                                         <div id="ai">
                                                 <div id="chatuser">Praktiki</div>
                                                 <br>
                                                 ${formatted}
                                         </div>
                                     </div>`
-                                    )
-            }
-            else{
-                let formatted = converter.makeHtml(chats[i].human)
-                $("#chats").append(`<div id="container">
+                    )
+                }
+                else {
+                    let formatted = converter.makeHtml(chats[i].human)
+                    $("#chats").append(`<div id="container">
                                         <div id="human">
                                                 <div id="chatuser"><%=username%></div>
                                                 <br>
                                                 ${formatted}
                                         </div>
                                     </div>`
-                                    )
+                    )
+                }
             }
-        }
-        
-    </script>
 
-    <input type="text" name="query" id="query" />
-    <button onclick="getresponse()" type="submit">SUBMIT</button>
-    <br>
-    <textarea name="text" id="textbox"></textarea>
-    <br>
-    <button onclick="savedoc()">SAVE New DOC</button>
-
-    
+        </script>
+        <div class="inputs" style="width:100%;">
+            <textarea type="text" name="query" id="query" placeholder="Type your message.."
+                style="width:89%;margin-right:25px;"></textarea>
+            <button onclick="getresponse()" type="submit" class="message-submit">SUBMIT</button>
+            <!-- <br>
+            <textarea name="text" id="textbox"></textarea>
+            <br>
+            <button onclick="savedoc()">SAVE New DOC</button> -->
+        </div>
+    </div>
 
     <script>
         const input = document.getElementById("query");
         const value = input.value
         function getresponse() {
+            $("html, body").animate({ scrollTop: $(document).height() }, 1000);
             const data = { "user_id": "<%=username%>", "session_id": "<%=session%>", "query": $("#query").val(), type: "input" }
             setTimeout(
-            function() {
-                var converter = new showdown.Converter(),
-                text = $("#query").val()
-                html = converter.makeHtml(text);
-                $("#chats").append(`<div id="container"><div id="human"><div id="chatuser"><%=username%></div><br>${html}</div></div>`)
-            },
-            500);
+                function () {
+                    var converter = new showdown.Converter(),
+                        text = $("#query").val()
+                    html = converter.makeHtml(text);
+                    $("#chats").append(`<div id="container"><div id="human"><div id="chatuser"><%=username%></div><br>${html}</div></div>`)
+                },
+                500);
             $.getJSON("/request", $.param(data), (res) => {
                 console.log("RESPONSE: " + res.text)
                 var converter = new showdown.Converter(),
-                text = res.text
+                    text = res.text
                 html = converter.makeHtml(text);
+                $("html, body").animate({ scrollTop: $(document).height() }, 1000);
                 $("#chats").append(`<div><div id="ai"><div id="chatuser">Praktiki</div><br>${html}</div></div>`)
             })
             console.log($("#textbox").val())
-        }        
+        }
         function savedoc() {
+            $("html, body").animate({ scrollTop: $(document).height() }, 1000);
             let textbox = document.getElementById("textbox").value
             console.log(textbox)
-            const data = { "user_id": "<%=username%>", "session_id": "<%=session%>","type": "text-area", "query": textbox }
+            const data = { "user_id": "<%=username%>", "session_id": "<%=session%>", "type": "text-area", "query": textbox }
             $.getJSON("/request", $.param(data), (res) => {
                 console.log("RESPONSE: " + res.text)
+                $("html, body").animate({ scrollTop: $(document).height() }, 1000);
                 $("#chats").append($(`<div id="newdocument">~New Document uploaded by <%=username%>~</div>`))
             })
         }
-    </script> 
+    </script>
 </body>
 
 </html>
