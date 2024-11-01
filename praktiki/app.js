@@ -99,7 +99,7 @@ app.get('/chat', (req, res) => {
             payload: { "user_id": req.session.name, "session_id": session }
         }).then(response => {
             console.log(response.response)
-            return res.render('chat.ejs', { chats: response.response, username: req.session.name, session: session })
+            return res.render('chat.ejs', { chats: JSON.stringify(response.response), username: req.session.name, session: session })
         })
     } else {
         return res.render('new_chat.ejs', { username: req.session.name })

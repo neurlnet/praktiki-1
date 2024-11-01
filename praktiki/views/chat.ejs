@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>CHAT</title>
     <style>
         * {
@@ -19,7 +22,7 @@
             overflow-y: auto;
             float: left;
             position: relative;
-            margin-left: -5px;
+            
         }
         div#human {
             padding:10px;
@@ -50,7 +53,7 @@
             color:rgba(2, 49, 47, 0.65)
         }
         div#container{
-            margin-bottom:100px;
+            margin-bottom:140px;
         }
         div#newdocument{
             margin:auto;
@@ -58,12 +61,15 @@
             background-color:rgb(193, 193, 193);
             border-radius:6px;
         }
+        body{
+            margin-bottom:10%
+        }
     </style>
 </head>
 
 <body>
     <div id="chats">
-        <%for(let i=0; i<(chats.length); i++){%>
+        <!-- <%for(let i=0; i<(chats.length); i++){%>
             <%if(chats[i].ai){%>
                 <div ><div id="ai"><div id="chatuser">Praktiki</div><br><%=chats[i].ai%>
                 </div></div>
@@ -71,19 +77,49 @@
                     <div id="container"><div id="human"><div id="chatuser"><%=username%></div><br><%=chats[i].human%>
                     </div></div>
                     <%}%>
-                        <%}%>
+                        <%}%> -->
     </div>
+    <div id="chat_data_server" style="display: none;">
+        <%-chats%>
+    </div>
+    <script>
+        let chats = JSON.parse($("#chat_data_server").text())
+        var converter = new showdown.Converter()
+        for(let i=0; i<(chats.length); i++){
+            if(chats[i].ai){
+                let formatted = converter.makeHtml(chats[i].ai)
+                $("#chats").append(`<div>
+                                        <div id="ai">
+                                                <div id="chatuser">Praktiki</div>
+                                                <br>
+                                                ${formatted}
+                                        </div>
+                                    </div>`
+                                    )
+            }
+            else{
+                let formatted = converter.makeHtml(chats[i].human)
+                $("#chats").append(`<div id="container">
+                                        <div id="human">
+                                                <div id="chatuser"><%=username%></div>
+                                                <br>
+                                                ${formatted}
+                                        </div>
+                                    </div>`
+                                    )
+            }
+        }
+        
+    </script>
+
     <input type="text" name="query" id="query" />
     <button onclick="getresponse()" type="submit">SUBMIT</button>
-    <br>
     <br>
     <textarea name="text" id="textbox"></textarea>
     <br>
     <button onclick="savedoc()">SAVE New DOC</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
 
     <script>
         const input = document.getElementById("query");
@@ -92,7 +128,10 @@
             const data = { "user_id": "<%=username%>", "session_id": "<%=session%>", "query": $("#query").val(), type: "input" }
             setTimeout(
             function() {
-                $("#chats").append($(`<div id="container"><div id="human"><div id="chatuser"><%=username%></div><br>${$("#query").val()}</div></div>`))
+                var converter = new showdown.Converter(),
+                text = $("#query").val()
+                html = converter.makeHtml(text);
+                $("#chats").append(`<div id="container"><div id="human"><div id="chatuser"><%=username%></div><br>${html}</div></div>`)
             },
             500);
             $.getJSON("/request", $.param(data), (res) => {
@@ -113,7 +152,7 @@
                 $("#chats").append($(`<div id="newdocument">~New Document uploaded by <%=username%>~</div>`))
             })
         }
-    </script>
+    </script> 
 </body>
 
 </html>
