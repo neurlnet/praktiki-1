@@ -5,6 +5,7 @@ const session = require('express-session')
 const axios = require('axios');
 const cookieParser = require('cookie-parser');
 const cors = require('cors')
+const pdf = require('pdf-parse');
 const { usernames } = require('./usernames.json')
 const ajax = async (config) => {
     const request = await fetch(config.url, {
@@ -18,6 +19,8 @@ const ajax = async (config) => {
     let response = await request.json();
     return response
 }
+var fileupload = require("express-fileupload");
+app.use(fileupload());
 
 console.log(usernames[0].password)
 
@@ -98,7 +101,7 @@ app.get('/chat', (req, res) => {
             url: 'https://praktikiapi-tu58usbg.b4a.run/chat_get',
             payload: { "user_id": req.session.name, "session_id": session }
         }).then(response => {
-            console.log(response.response)
+            
             return res.render('chat.ejs', { chats: JSON.stringify(response.response), username: req.session.name, session: session })
         })
     } else {
@@ -113,7 +116,7 @@ app.get('/request', (req, res) => {
             url: 'https://praktikiapi-tu58usbg.b4a.run/response_get',
             payload: { "user_id": req.query.user_id, "session_id": req.query.session_id, "query": req.query.query }
         }).then(response => {
-            console.log(response.response)
+            
             return res.send({ text: response.response });
         })
     } else {
@@ -123,12 +126,26 @@ app.get('/request', (req, res) => {
             url: 'https://praktikiapi-tu58usbg.b4a.run/save',
             payload: { "user_id": req.query.user_id, "session_id": req.query.session_id, "doc": req.query.query, "source": `blank_for_now(${Math.random() * 12213443})` }
         }).then(response => {
-            console.log(response.response)
+            
             return res.send({ text: "DOCUMENT UPLOADED!" });
         })
     }
 })
-
+app.post('/pdf_save',(req,res)=>{
+    console.log({ "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": "result.text", "source": req.files.pdfFile.name })
+    pdf(req.files.pdfFile).then(result => {
+        ajax({
+            method: 'POST',
+            url: 'https://praktikiapi-tu58usbg.b4a.run/save',
+            payload: { "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": result.text, "source": req.files.pdfFile.name }
+        }).then(response => {
+            return res.send({ text: "DOCUMENT UPLOADED!" });
+        })
+    })
+})
+app.get("/pdfUpload.svg", (req,res)=>{
+    res.sendFile(__dirname + "/pdfUpload.svg")
+})
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
