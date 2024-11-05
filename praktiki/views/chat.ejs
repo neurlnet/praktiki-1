@@ -233,25 +233,28 @@
             position: absolute;
             z-index: 1;
             right: 4.1%;
-            
+
             border: none;
-            
+
             text-transform: uppercase;
             line-height: 1;
-            
-            
+
+
             outline: none !important;
-            margin-top:2.67%;
+            margin-top: 2.67%;
         }
-        div.inputs{
-            display:flex;
+
+        div.inputs {
+            display: flex;
         }
+
         .message-submit,
-        .btn{
-            flex:1
+        .btn {
+            flex: 1
         }
-        #query{
-            flex:1;
+
+        #query {
+            flex: 1;
         }
     </style>
 </head>
@@ -348,21 +351,32 @@
         }
         let pdfBtn = document.getElementById("uploadPDF")
         let file = document.getElementById("PDFFileInput")
-        pdfBtn.addEventListener("click", ()=>{
+        pdfBtn.addEventListener("click", () => {
             console.log("button clicked")
-            
+
             const formData = new FormData();
             console.log(file[0])
             formData.append("pdfFile", $("#PDFFileInput")[0].files[0])
             formData.append("user_id", "<%=username%>")
             formData.append("session_id", "<%=session%>")
             console.log(formData)
-            fetch("/pdf_save",{
+            fetch("/pdf_save", {
                 method: "post",
                 body: formData
-            }).then(response =>{
+            }).then(response => {
                 $('.modal-close')[0].click();
-                alert("Your Document has been uploaded")
+                alert(JSON.stringify(response))
+                if (response.err) {
+                    if (response.err == "EMPTY") {
+                        alert("Your Document did not contain any text, try again.")
+                    }
+                    else {
+                        alert(response.err)
+                    }
+                }
+                else {
+                    alert("Your Document has been uploaded")
+                }
             })
         })
         function savedoc() {
