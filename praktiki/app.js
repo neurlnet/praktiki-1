@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
             url: 'https://praktikiapi-tu58usbg.b4a.run/sessions_get',
             payload: { "user_id": username }
         }).then(response => {
-            if (response.response[0]) {
+            
                 for (let i = 0; i < usernames.length; i++) {
                     if (usernames[i].password === password) {
                         res.render("index.ejs", { name: username, sessions: response.response })
@@ -49,9 +49,7 @@ app.get('/', (req, res) => {
                         res.render("new.ejs", { err: "incorrect password" })
                     }
                 }
-            } else {
-                res.render("new.ejs", { err: "no such username exists" })
-            }
+            
         })
     }
 })
