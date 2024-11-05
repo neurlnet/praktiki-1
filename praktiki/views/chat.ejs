@@ -8,6 +8,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
     <title>CHAT</title>
     <style>
         * {
@@ -15,12 +19,16 @@
             scroll-behavior: smooth;
             padding: 0px;
             border-radius: 8px;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            color:white
         }
 
         #chats {
             height: 100%;
             width: 100%;
-            background: #e4e2e2;
+            background: #383737;
             width: 100%;
             padding-top: 15px;
             padding-bottom: 15px;
@@ -52,7 +60,7 @@
             margin-right: 16px;
             float: right;
             /* color: #fff; */
-            background: linear-gradient(120deg, #3de488, #3dbfe3);
+            background: linear-gradient(120deg, #25448c, #164e2e);
             border-radius: 17px 17px 0 17px;
         }
 
@@ -65,7 +73,7 @@
             right: 1px;
             justify-content: right;
             border-radius: 10px;
-            background: linear-gradient(30deg, #a4ddbd, #9bcbd9);
+            background: linear-gradient(30deg, #26386e, #9bcbd9);
             border-radius: 17px 17px 17px 0;
             margin-bottom: 1px;
         }
@@ -73,7 +81,7 @@
         div#chatuser {
             font-size: 15px;
             font-weight: bold;
-            color: rgba(2, 49, 47, 0.65)
+            color: rgba(151, 255, 250, 0.65)
         }
 
         div#container {
@@ -108,12 +116,13 @@
         div.inputs {
             position: sticky;
             bottom: 0;
-            background: linear-gradient(10deg, #86a9afeb, #3e5c50e8);
+            background: linear-gradient(10deg, #86a9af, #443861);
             width: 100%;
             margin: 0%;
             border-radius: 1px 1px 14px 14px;
             min-height: 100px;
             height: max-content;
+            color:white;
         }
 
         #query {
@@ -241,7 +250,7 @@
 
 
             outline: none !important;
-            margin-top: 2.67%;
+            margin-top: 3.17%;
         }
 
         div.inputs {
@@ -255,6 +264,10 @@
 
         #query {
             flex: 1;
+        }
+
+        ::placeholder{
+            color:white;
         }
     </style>
 </head>
