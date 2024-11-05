@@ -1,6 +1,8 @@
 {
-    "usernames": [{
-        "username": "obama",
-        "password": "."
-    }]
+    "usernames": [
+        {
+            "username": "saumil",
+            "password": "."
+        }
+    ]
 }

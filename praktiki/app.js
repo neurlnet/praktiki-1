@@ -41,7 +41,6 @@ app.get('/', (req, res) => {
             url: 'https://praktikiapi-tu58usbg.b4a.run/sessions_get',
             payload: { "user_id": username }
         }).then(response => {
-            
                 for (let i = 0; i < usernames.length; i++) {
                     if (usernames[i].password === password) {
                         res.render("index.ejs", { name: username, sessions: response.response })
@@ -49,7 +48,6 @@ app.get('/', (req, res) => {
                         res.render("new.ejs", { err: "incorrect password" })
                     }
                 }
-            
         })
     }
 })
@@ -122,7 +120,7 @@ app.get('/request', (req, res) => {
         ajax({
             method: 'POST',
             url: 'https://praktikiapi-tu58usbg.b4a.run/save',
-            payload: { "user_id": req.query.user_id, "session_id": req.query.session_id, "doc": req.query.query, "source": `blank_for_now(${Math.random() * 12213443})` }
+            payload: { "user_id": req.query.user_id, "session_id": req.query.session_id, "doc": req.query.query, "source_id": `blank_for_now(${Math.random() * 12213443})` }
         }).then(response => {
 
             return res.send({ text: "DOCUMENT UPLOADED!" });
@@ -139,7 +137,7 @@ app.post('/pdf_save', (req, res) => {
             ajax({
                 method: 'POST',
                 url: 'https://praktikiapi-tu58usbg.b4a.run/save',
-                payload: { "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": result.text, "source": req.files.pdfFile.name }
+                payload: { "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": result.text, "source_id": req.files.pdfFile.name }
             }).then(response => {
                 return res.send({ text: "DOCUMENT UPLOADED!" });
             }).catch(err => {
