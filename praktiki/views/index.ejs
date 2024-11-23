@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
         rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>Praktiki</title>
     <style>
         * {
@@ -48,9 +51,11 @@
         a {
             font-size: 17px;
             text-decoration: none;
+            background-color: rgb(79, 75, 75);
         }
 
-        h2, #link-wrapper {
+        h2,
+        #link-wrapper {
             padding: 5px;
             margin-top: 8px;
             margin-bottom: 8px;
@@ -62,42 +67,63 @@
             background-color: rgb(60, 57, 57);
             border-radius: 10px;
         }
+        #links-chats{
+            background: none;
+        }
     </style>
 </head>
 
 <body>
+
     <div class="links">
-        <h2>Conversations </h2>
+        <h2>Praktiki Sessions </h2>
         <hr>
-        <%if(sessions!=="none"){%>
-            <%for(let i=0; i<sessions.length; i++){%>
-
-                <a href="/chat?session=<%=sessions[i]%>" target="chat_window">
-                    <div id="link-wrapper">
-                        <%=sessions[i]%>
-                    </div>
-                </a>
-
-
-                <%}%>
+        <div id="links-chats"></div>
+        <!-- <%console.log(sessions)%>
+            <%if(sessions!=="none"){%>
+                <%for(let i=0; i<sessions.length; i++){%>
+                    <a href="/chat?session=<%=sessions[i]%>" target="chat_window">
+                        <div id="link-wrapper">
+                            <%=sessions[i]%>
+                        </div>
+                    </a>
                     <%}%>
-                        <hr>
-                        <a href="/chat?session=new" target="chat_window">
-                            <div id="link-wrapper">
-                                New chat
-                            </div>
-                        </a>
-                        <a href="/logout">
-                            <div id="link-wrapper">
-                                Logout
-                            </div>
-                        </a>
+                        <%}%> -->
+        <hr>
+        <a href="/chat?session=new" target="chat_window">
+            <div id="link-wrapper">
+                New chat
+            </div>
+        </a>
+        <a href="/logout">
+            <div id="link-wrapper">
+                Logout
+            </div>
+        </a>
 
     </div>
-    <iframe id="chat_window" name="chat_window" src="/chat?session=<%=sessions[0]%>" style="float: right"></iframe>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <div id="sessions" style="display:none;">
+        <%=sessions%>
+    </div>
+    <script>
+        let sessions = JSON.parse($("#sessions").text())
+        console.log(sessions[0])
+        for (let i = 0; i < sessions.length; i++) {
+            const data = { "session_id": sessions[i] , "type":"session"}
+            console.log(data)
+            $.getJSON("/name", $.param(data), (res) => {
+                console.log(sessions[i])
+                $("#links-chats").append(`<a href="/chat?session=${sessions[i]}" target="chat_window">
+                        <div id="link-wrapper">
+                            ${res.text}
+                        </div>
+                </a>`)
+            })
+        }
+        $("body").append(`<iframe id='chat_window' name='chat_window' src=/chat?session=${sessions[0]} style='float: right'></iframe>`)
+    </script>
+    
+    
 </body>
 
 </html>

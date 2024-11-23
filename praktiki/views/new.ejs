@@ -151,7 +151,8 @@
 </head>
 
 <body>
-
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <meta name="google-signin-client_id" content="183853531374-7ip46ssklbnksessptq9acjn47r0b497.apps.googleusercontent.com">
   <%if(typeof err !== "undefined"){%>
     <script>
       alert("<%=err%>") 
@@ -209,9 +210,11 @@
             </div>
           </div>
           <button class="login">Login </button>
+          <div class="g-signin2" data-onsuccess="onSignIn"></div>
           <div class="footer"><span>Signup</span><span>Forgot Password?</span></div>
       </div>
       </form>
+      
 </body>
 
 </html>

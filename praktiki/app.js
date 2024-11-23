@@ -19,6 +19,8 @@ const ajax = async (config) => {
     let response = await request.json();
     return response
 }
+const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+
 var fileupload = require("express-fileupload");
 app.use(fileupload());
 
@@ -41,13 +43,13 @@ app.get('/', (req, res) => {
             url: 'https://praktikiapi-tu58usbg.b4a.run/sessions_get',
             payload: { "user_id": username }
         }).then(response => {
-                for (let i = 0; i < usernames.length; i++) {
-                    if (usernames[i].password === password) {
-                        res.render("index.ejs", { name: username, sessions: response.response })
-                    } else {
-                        res.render("new.ejs", { err: "incorrect password" })
-                    }
+            for (let i = 0; i < usernames.length; i++) {
+                if (usernames[i].password === password) {
+                    res.render("index.ejs", { name: username, sessions: JSON.stringify(response.response) })
+                } else {
+                    res.render("new.ejs", { err: "incorrect password" })
                 }
+            }
         })
     }
 })
@@ -58,37 +60,13 @@ app.get('/logout', (req, res) => {
     return res.redirect('/')
 })
 
-app.post('/submit', async (req, res) => {
-    const text = req.query.doc_text;
-    const name = req.query.doc_name;
-    console.log(text)
-    fetch("https://praktikiapi-tu58usbg.b4a.run/save",
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            method: "POST",
-            body: JSON.stringify({
-                user_id: req.session.name,
-                session_id: name,
-                doc: text,
-                source: name
-            })
-        })
-        .then(function (res) { console.log(res) })
-        .catch(function (res) { console.log(res) })
-
-    return res.redirect('/chat')
-})
-
 app.get('/new_user', (req, res) => {
     console.log(req.query)
     req.session.name = req.query.name;
     req.session.password = req.query.password;
     return res.redirect('/')
 })
-
+//Get History
 app.get('/chat', (req, res) => {
     const session = req.query.session;
     if (session !== "new") {
@@ -104,29 +82,18 @@ app.get('/chat', (req, res) => {
         return res.render('new_chat.ejs', { username: req.session.name })
     }
 })
+//Get Chat Response from Model
+app.get('/get_response', (req, res) => {
+    ajax({
+        method: 'POST',
+        url: 'https://praktikiapi-tu58usbg.b4a.run/response_get',
+        payload: { "user_id": req.query.user_id, "session_id": req.query.session_id, "query": req.query.query }
+    }).then(response => {
 
-app.get('/request', (req, res) => {
-    if (req.query.type === 'input') {
-        ajax({
-            method: 'POST',
-            url: 'https://praktikiapi-tu58usbg.b4a.run/response_get',
-            payload: { "user_id": req.query.user_id, "session_id": req.query.session_id, "query": req.query.query }
-        }).then(response => {
-
-            return res.send({ text: response.response });
-        })
-    } else {
-        console.log(req.query)
-        ajax({
-            method: 'POST',
-            url: 'https://praktikiapi-tu58usbg.b4a.run/save',
-            payload: { "user_id": req.query.user_id, "session_id": req.query.session_id, "doc": req.query.query, "source_id": `blank_for_now(${Math.random() * 12213443})` }
-        }).then(response => {
-
-            return res.send({ text: "DOCUMENT UPLOADED!" });
-        })
-    }
+        return res.send({ text: response.response });
+    })
 })
+//Save PDF reference
 app.post('/pdf_save', (req, res) => {
     //console.log({ "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": "result.text", "source": req.files.pdfFile.name })
     try {
@@ -137,7 +104,7 @@ app.post('/pdf_save', (req, res) => {
             ajax({
                 method: 'POST',
                 url: 'https://praktikiapi-tu58usbg.b4a.run/save',
-                payload: { "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": result.text, "source_id": req.files.pdfFile.name }
+                payload: { "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": result.text, "source_id": genRanHex(6), "source_name": req.files.pdfFile.name, "session_name":req.body.session_name }
             }).then(response => {
                 return res.send({ text: "DOCUMENT UPLOADED!" });
             }).catch(err => {
@@ -146,11 +113,54 @@ app.post('/pdf_save', (req, res) => {
         })
     }
     catch {
-        res.send({"err":"EMPTY"})
+        res.send({ "err": "EMPTY" })
+    }
+})
+//Save Text Reference
+app.post('/text_save', (req, res) => {
+    //console.log({ "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": "result.text", "source": req.files.pdfFile.name })
+    ajax({
+        method: 'POST',
+        url: 'https://praktikiapi-tu58usbg.b4a.run/save',
+        payload: { "user_id": req.body.user_id, "session_id": req.body.session_id, "doc": req.body.text, "source_id": genRanHex(6), "source_name": "TEXT", "session_name":req.body.session_name }
+    }).then(response => {
+        return res.send({ text: "DOCUMENT UPLOADED!" });
+    }).catch(err => {
+        return res.send({ "err": err })
+    })
+})
+//Get name of session/source
+app.get('/name', (req, res) => {
+    if (req.query.type === 'session') {
+        ajax({
+            method: 'POST',
+            url: 'https://praktikiapi-tu58usbg.b4a.run/get_session_name',
+            payload: { "session_id": req.query.session_id }
+        }).then(response => {
+            return res.send({ text: response.response });
+        })
+    } else {
+        console.log(req.query)
+        ajax({
+            method: 'POST',
+            url: 'https://praktikiapi-tu58usbg.b4a.run/get_source_name',
+            payload: { "source_id": req.query.source_id }
+        }).then(response => {
+            return res.send({ text: response.response });
+        })
     }
 })
 app.get("/pdfUpload.svg", (req, res) => {
     res.sendFile(__dirname + "/pdfUpload.svg")
+})
+app.get("/send.svg", (req, res) => {
+    res.sendFile(__dirname + "/send.svg")
+})
+app.get("/text.svg", (req, res) => {
+    res.sendFile(__dirname + "/text.svg")
+})
+app.get("/user.svg", (req, res) => {
+    res.sendFile(__dirname + "/user.svg")
 })
 app.listen(port, () => {
     console.log(`listening on port ${port}`)

@@ -4,37 +4,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Praktiki</title>
-</head>
-
-<body>
-    <h1>
-        UPLOAD A DOCUMENT TO START A NEW CHAT
-    </h1>
-    <h2>
-        PUT DOCUMENT NAME IN INPUT AND DOCUMENT TEXT IN TEXTAREA
-    </h2>
-    <input type="text" name="query" id="query" />
-    <br>
-    <br>
-    <textarea name="text" id="textarea"></textarea>
-    <br>
-    <button onclick="savedoc()">SUBMIT</button>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Praktiki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
+    <title>CHAT</title>
+    <style type="text/css">
+        body {
+            /* font-size: 20px; */
+            scroll-behavior: smooth;
+            padding: 0px;
+            border-radius: 8px;
+            font-family: "Plus Jakarta Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            color: white;
+            scrollbar-color: rgb(53, 52, 65) transparent;
+            scrollbar-width: thin;
+            scroll-behavior: smooth;
+            background: #383737;
+            border: 5px;
+            padding: 35px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align:center">Create a New Praktiki Session</h1>
+    <div class="flexbox-conatiner" style="display: inline-block;
+    clear:both;
+    flex-direction: row;
+    width:100%;
+    background: #272626;
+    border-radius: 7px;">
+        <div id="pdf-container" style="margin:10px;
+        padding:10px;
+        
+        background-color:#595757;
+
+        align-content:center;
+        float:left;height:150px;width:450px;border-radius:15px;margin-left:50px;">
+            <h1>
+                Upload PDF
+            </h1>
+            <div>
+                Start By Uploading A Reference PDF Document<br>
+                <input type="file" id="PDFFileInput" accept="application/pdf">
+                <button id="uploadPDF">Upload Your PDF</button>
+            </div>
+        </div>
+        <div style="float:left;padding-left:100px;padding-right:100px;">
+            <h3>OR</h3>
+        </div>
+        <div id="text-container" style="margin:10px;
+        padding:10px;
+        
+        background-color:#595757;
+
+        align-content:center;
+        float:right;height:150px;margin-right:50px;width:450px;border-radius:15px;">
+            <h1>
+                Upload Text
+            </h1>
+            <div>
+                Start By Uploading Some Reference Text<br>
+                <textarea id="TextInput"></textarea>
+                <button id="uploadText">Upload Your Text</button>
+            </div>
+        </div>
+        <div style="display:block;text-align:center;">
+            <h4>Name your session:</h4><input type="text" id="session_name">
+        </div>
+    </div>
 
     <script>
-        function savedoc() {
-            const textarea = $("#textarea").val()
-            const data = { "user_id": "<%=username%>", "session_id": $("#query").val(), "type": "text-area", "query": textarea }
-            $.getJSON("/request", $.param(data), (res) => {
-                console.log("RESPONSE: " + res.text)
-                $("#chats").append($(`<b>NEW DOCUMENT UPLOADED</b>`))
-            })
-            return window.location.replace(`http://localhost/chat?session=${encodeURIComponent($("#query").val())}`)
-        }
+        const genRanHex = size => [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+        let pdfBtn = document.getElementById("uploadPDF")
+        pdfBtn.addEventListener("click", () => {
+            const formData = new FormData();
+            var fileEmpty = $("#PDFFileInput")[0].files.length === 0;
+            let newSessionId = genRanHex(6)
+            formData.append("pdfFile", $("#PDFFileInput")[0].files[0])
+            formData.append("user_id", "<%=username%>")
+            formData.append("session_id", newSessionId)
+            formData.append("session_name", document.getElementById("session_name").value)
+            console.log(formData)
+            if (fileEmpty) {
+                alert("You have not uploaded any document. Try again")
+            }
+            else {
+                fetch("/pdf_save", {
+                    method: "post",
+                    body: formData
+                }).then(response => {
+                    if (response.err) {
+                        alert(response.err)
+                    }
+                    else {
+                        alert("Your Document has been uploaded")
+                        window.top.location.reload()
+                        //location.replace(`/chat?session=${newSessionId}`)
+                    }
+                })
+            }
+        })
+        let textBtn = document.getElementById("uploadText")
+        let text = document.getElementById("TextInput")
+        textBtn.addEventListener("click", () => {
+            let newSessionId = genRanHex(6)
+            const formData = new FormData();
+            formData.append("text", text.value)
+            formData.append("user_id", "<%=username%>")
+            formData.append("session_id", newSessionId )
+            formData.append("session_name", document.getElementById("session_name").value)
+            console.log(formData)
+            if (text.value.replace(/\s+/g, '') == '') {
+                alert("Your uploaded text was empty, try again.")
+            }
+            else {
+                fetch("/text_save", {
+                    method: "post",
+                    body: formData
+                }).then(response => {
+                    if (response.err) {
+                        alert(response.err)
+                    }
+                    else {
+                        alert("Your Text has been uploaded")
+                        window.top.location.reload()
+                        //location.replace(`/chat?session=${newSessionId}`)
+                    }
+                })
+            }
+        })
     </script>
 </body>
 

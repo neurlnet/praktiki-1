@@ -22,7 +22,10 @@
             font-family: "Plus Jakarta Sans", sans-serif;
             font-optical-sizing: auto;
             font-style: normal;
-            color:white
+            color: white;
+            scrollbar-color: rgb(53, 52, 65) transparent;
+            scrollbar-width: thin;
+            scroll-behavior: smooth;
         }
 
         #chats {
@@ -73,7 +76,7 @@
             right: 1px;
             justify-content: right;
             border-radius: 10px;
-            background: linear-gradient(30deg, #26386e, #9bcbd9);
+            background: linear-gradient(30deg, #26386e, #5e7a83);
             border-radius: 17px 17px 17px 0;
             margin-bottom: 1px;
         }
@@ -122,7 +125,7 @@
             border-radius: 1px 1px 14px 14px;
             min-height: 100px;
             height: max-content;
-            color:white;
+            color: white;
         }
 
         #query {
@@ -132,9 +135,9 @@
             resize: none;
             color: rgb(235, 232, 232);
             padding: 10px;
-            height: 65px;
+            height: 95px;
             margin: 0;
-            padding-right: 20px;
+            padding-right: 5px;
         }
 
         & .message-submit {
@@ -219,12 +222,14 @@
         }
 
         .modal-window {
+
             &>div {
                 border-radius: 1rem;
             }
         }
 
         .modal-window div:not(:last-of-type) {
+
             margin-bottom: 15px;
         }
 
@@ -237,20 +242,35 @@
             align-items: right;
         }
 
-
         & .btn {
-            position: absolute;
+            /* position: absolute; */
             z-index: 1;
-            right: 4.1%;
-
+            right: 32px;
             border: none;
-
             text-transform: uppercase;
             line-height: 1;
-
-
             outline: none !important;
-            margin-top: 3.17%;
+            top: 50px;
+        }
+
+        .btn-text {
+            background-color: none;
+            height: 10px;
+            width: 10px;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            /* align-items: right; */
+        }
+
+        & .btn-text {
+            /* position: absolute; */
+            z-index: 1;
+            margin-right: 20px;
+            border: none;
+            text-transform: uppercase;
+            line-height: 1;
+            outline: none !important;
+            margin-top: 35px;
         }
 
         div.inputs {
@@ -262,12 +282,24 @@
             flex: 1
         }
 
+        .btn-text {
+            flex: 1
+        }
+
         #query {
             flex: 1;
         }
 
-        ::placeholder{
-            color:white;
+        #open-modal-container {
+            background-color: #4d4b4b;
+        }
+
+        ::placeholder {
+            color: white;
+        }
+
+        .interior {
+            padding-top: 42px;
         }
     </style>
 </head>
@@ -310,7 +342,7 @@
         </script>
         <div class="inputs" style="width:100%;">
             <textarea type="text" name="query" id="query" placeholder="Type your message.."
-                style="width:89%;margin-right:25px;"></textarea>
+                style="width:89%;margin-right:25px;overflow:hidden;"></textarea>
 
             <button onclick="getresponse()" type="submit" class="message-submit">SUBMIT</button>
 
@@ -319,91 +351,120 @@
                     <a class="btn" href="#open-modal"><img src="pdfUpload.svg" style="height:67px;width:40px" /></a>
                 </div>
             </div>
+            <div class="modal-wrapper-text">
+                <div class="interior">
+                    <a class="btn-text" href="#open-modal-text"><img src="text.svg"
+                            style="height:67px;width:40px" /></a>
+                </div>
+            </div>
+
 
             <div id="open-modal" class="modal-window">
-                <div>
+                <div id="open-modal-container">
                     <a href="#" title="Close" class="modal-close">Close</a>
                     <h1>
                         Upload PDF
                     </h1>
                     <div>
-                        Select PDF File to Upload as Reference Document<br>
+                        Select PDF File to Upload as Reference<br>
                         <input type="file" id="PDFFileInput" accept="application/pdf">
-                        <button id="uploadPDF">Upload Your PDF</button>
+                        <button id="uploadPDF" style="background-color: #383737;padding:4px;">Upload Your PDF</button>
                     </div>
                 </div>
             </div>
-            <!-- <br>
-            <textarea name="text" id="textbox"></textarea>
-            <br>
-            <button onclick="savedoc()">SAVE New DOC</button> -->
+            <div id="open-modal-text" class="modal-window">
+                <div id="open-modal-container">
+                    <a href="#" title="Close" class="modal-close">Close</a>
+                    <h1>
+                        Upload Text
+                    </h1>
+                    <div>
+                        Type Text to upload as reference<br>
+                        <textarea id="TextInput" style="background-color: #383737;color:#fff"></textarea>
+                        <button id="uploadText" style="background-color: #383737;padding:4px;">Upload Your Text</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <script>
-        function getresponse() {
-            $("html, body").animate({ scrollTop: $(document).height() }, 1000);
-            const data = { "user_id": "<%=username%>", "session_id": "<%=session%>", "query": $("#query").val(), type: "input" }
-            setTimeout(
-                function () {
-                    var converter = new showdown.Converter(),
-                        text = $("#query").val()
-                    html = converter.makeHtml(text);
-                    $("#chats").append(`<div id="container"><div id="human"><div id="chatuser"><%=username%></div><br>${html}</div></div>`)
-                },
-                500);
-            $.getJSON("/request", $.param(data), (res) => {
-                console.log("RESPONSE: " + res.text)
-                var converter = new showdown.Converter(),
-                    text = res.text
-                html = converter.makeHtml(text);
+        <script>
+            function getresponse() {
                 $("html, body").animate({ scrollTop: $(document).height() }, 1000);
-                $("#chats").append(`<div><div id="ai"><div id="chatuser">Praktiki</div><br>${html}</div></div>`)
-            })
-            console.log($("#textbox").val())
-        }
-        let pdfBtn = document.getElementById("uploadPDF")
-        let file = document.getElementById("PDFFileInput")
-        pdfBtn.addEventListener("click", () => {
-            console.log("button clicked")
-
-            const formData = new FormData();
-            console.log(file[0])
-            formData.append("pdfFile", $("#PDFFileInput")[0].files[0])
-            formData.append("user_id", "<%=username%>")
-            formData.append("session_id", "<%=session%>")
-            console.log(formData)
-            fetch("/pdf_save", {
-                method: "post",
-                body: formData
-            }).then(response => {
-                $('.modal-close')[0].click();
-                alert(JSON.stringify(response))
-                if (response.err) {
-                    if (response.err == "EMPTY") {
-                        alert("Your Document did not contain any text, try again.")
-                    }
-                    else {
-                        alert(response.err)
-                    }
+                const data = { "user_id": "<%=username%>", "session_id": "<%=session%>", "query": $("#query").val() }
+                setTimeout(
+                    function () {
+                        var converter = new showdown.Converter(),
+                            text = $("#query").val()
+                        html = converter.makeHtml(text);
+                        $("#chats").append(`<div id="container"><div id="human"><div id="chatuser"><%=username%></div><br>${html}</div></div>`)
+                    },
+                    500);
+                $.getJSON("/get_response", $.param(data), (res) => {
+                    console.log("RESPONSE: " + res.text)
+                    var converter = new showdown.Converter(),
+                        text = res.text
+                    html = converter.makeHtml(text);
+                    $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+                    $("#chats").append(`<div><div id="ai"><div id="chatuser">Praktiki</div><br>${html}</div></div>`)
+                })
+                console.log($("#textbox").val())
+            }
+            let pdfBtn = document.getElementById("uploadPDF")
+            pdfBtn.addEventListener("click", () => {
+                console.log("button clicked")
+                const formData = new FormData();
+                var fileEmpty = $("#PDFFileInput")[0].files.length === 0;
+                formData.append("pdfFile", $("#PDFFileInput")[0].files[0])
+                formData.append("user_id", "<%=username%>")
+                formData.append("session_id", "<%=session%>")
+                console.log(formData)
+                if (fileEmpty) {
+                    alert("You have not uploaded any document. Try again")
                 }
                 else {
-                    alert("Your Document has been uploaded")
+                    fetch("/pdf_save", {
+                        method: "post",
+                        body: formData
+                    }).then(response => {
+                        $('.modal-close')[0].click();
+                        $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+                        if (response.err) {
+                            alert(response.err)
+                        }
+                        else {
+                            alert("Your Document has been uploaded")
+                        }
+                    })
                 }
             })
-        })
-        function savedoc() {
-            $("html, body").animate({ scrollTop: $(document).height() }, 1000);
-            let textbox = document.getElementById("textbox").value
-            console.log(textbox)
-            const data = { "user_id": "<%=username%>", "session_id": "<%=session%>", "type": "text-area", "query": textbox }
-            $.getJSON("/request", $.param(data), (res) => {
-                console.log("RESPONSE: " + res.text)
-                $("html, body").animate({ scrollTop: $(document).height() }, 1000);
-                $("#chats").append($(`<div id="newdocument">~New Document uploaded by <%=username%>~</div>`))
+            let textBtn = document.getElementById("uploadText")
+            let text = document.getElementById("TextInput")
+            textBtn.addEventListener("click", () => {
+                console.log("button clicked")
+                const formData = new FormData();
+                formData.append("text", text.value)
+                formData.append("user_id", "<%=username%>")
+                formData.append("session_id", "<%=session%>")
+                console.log(formData)
+                if (text.value.replace(/\s+/g, '') == '') {
+                    alert("Your uploaded text was empty, try again.")
+                }
+                else {
+                    fetch("/text_save", {
+                        method: "post",
+                        body: formData
+                    }).then(response => {
+                        $('.modal-close')[0].click();
+                        $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+                        if (response.err) {
+                            alert(response.err)
+                        }
+                        else {
+                            alert("Your Text has been uploaded")
+                        }
+                    })
+                }
             })
-        }
-    </script>
+        </script>
 </body>
 
 </html>
