@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
     let password = req.session.password;
 
     if (!username) {
-        res.render('new.ejs')
+        res.render('login.ejs')
     } else {
         ajax({
             method: 'POST',
@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
                 if (usernames[i].password === password) {
                     res.render("index.ejs", { name: username, sessions: JSON.stringify(response.response) })
                 } else {
-                    res.render("new.ejs", { err: "incorrect password" })
+                    res.render("login.ejs", { err: "incorrect password" })
                 }
             }
         })
