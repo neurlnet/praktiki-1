@@ -53,7 +53,6 @@ app.get('/', (req, res) => {
         })
     }
 })
-
 app.get('/logout', (req, res) => {
     req.session.name = '';
     req.session.password = '';
